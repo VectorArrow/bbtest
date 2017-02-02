@@ -10,12 +10,14 @@
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  **/
 
-
+include( plugin_dir_path( __FILE__ ) . 'resources/bytes_image_uploader/bbytes_image_uploader.php');
 if( !class_exists('ShootingGallery') ) {
 	class ShootingGallery {
 		private static $version = '0.1.0';
 		private static $_this;
 		private $settings;
+		private $pname = 'Shooting Gallery';
+		private $images;
 
 		public static function Instance() {
 			static $instance = null;
@@ -81,6 +83,8 @@ if( !class_exists('ShootingGallery') ) {
 		}
 		public function shooting_gallery_metabox( $post ) {
 			wp_nonce_field( 'shooting_gallery_metabox', 'shooting_gallery_metabox_nonce' );
+			echo 'Shooting Gallery';
+			echo bbytes_render_image_uploader('test',$images,3);
 			// TODO: render the shooting gallery metabox
 
 		}
@@ -99,7 +103,7 @@ if( !class_exists('ShootingGallery') ) {
 		}
 		private function get_setting( $key ) {
 			if( $key && isset( $this->settings[$key] ) ) {
-				return $this->settings['key'];
+				return $this->settings[$key];
 			}
 			return null;
 		}
