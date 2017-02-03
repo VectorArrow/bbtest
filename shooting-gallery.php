@@ -37,6 +37,7 @@ if( !class_exists('ShootingGallery') ) {
 				add_action( 'save_post', array( $this, 'save_post' ) );
 			} else {
 				add_filter( 'the_content', array( $this, 'the_content') );
+				add_action( 'wp_register_script', array( $this, 'register_resources'));
 				add_shortcode( 'shooting-gallery', array( $this, 'sg_shortcode' ) );
 			}
 		}
@@ -47,6 +48,9 @@ if( !class_exists('ShootingGallery') ) {
 		// PRIVATE STATIC FUNCTIONS
 
 		// PUBLIC FUNCTIONS
+		public function resgister_resources(){
+			wp_register_script('owl_carousel', plugin_dir_path( __FILE__ ) . 'resources/owl-carousel-1.3.2/owl.carousel.js');
+		}
 		public function the_content($content){
 			return $content;
 		}
@@ -115,6 +119,9 @@ if( !class_exists('ShootingGallery') ) {
 		public function sg_shortcode( $atts, $content ) {
 
 			$gal_images = get_post_meta( get_the_ID(), 'gallery_images', true);// TODO: implement shortcode
+			$output = '<div class="owl-carousel owl-theme">';
+			
+			$output .= '</div>';	
 			return print_r($gal_images, true);
 		}
 		// PRIVATE FUNCTIONS
