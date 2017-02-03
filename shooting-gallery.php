@@ -47,6 +47,9 @@ if( !class_exists('ShootingGallery') ) {
 		// PRIVATE STATIC FUNCTIONS
 
 		// PUBLIC FUNCTIONS
+		public function the_content($content){
+			return $content;
+		}
 		public function register_activation() {
 			// Stuff that only has to run once, on plugin activation
 		}
@@ -81,7 +84,7 @@ if( !class_exists('ShootingGallery') ) {
 		}
 		public function shooting_gallery_metabox( $post ) {
 			wp_nonce_field( 'shooting_gallery_metabox', 'shooting_gallery_metabox_nonce' );
-			echo '<p>These images will be included in the gallery. use the [shooting_gallery] shortcode to place it in the body, rather than before it.</p>';
+			echo '<p>These images will be included in the gallery. use the [shooting-gallery] shortcode to place it in the body, rather than before it.</p>';
 			$images = get_post_meta($post->ID, 'gallery_images', true);
 			echo bbytes_render_image_uploader('gallery_images',$images,3);
 			// TODO: render the shooting gallery metabox
@@ -110,7 +113,9 @@ if( !class_exists('ShootingGallery') ) {
 			// TODO: save the metabox data
 		}
 		public function sg_shortcode( $atts, $content ) {
-			// TODO: implement shortcode
+
+			$gal_images = get_post_meta( get_the_ID(), 'gallery_images', true);// TODO: implement shortcode
+			return print_r($gal_images, true);
 		}
 		// PRIVATE FUNCTIONS
 		private function initialize_settings() {
