@@ -105,7 +105,7 @@ if( !class_exists('ShootingGallery') ) {
 			wp_nonce_field( 'shooting_gallery_metabox', 'shooting_gallery_metabox_nonce' );
 			echo '<p>These images will be included in the gallery. use the [shooting-gallery] shortcode to place it in the body, rather than before it.</p>';
 			$images = get_post_meta($post->ID, 'gallery_images', true);
-			echo bbytes_render_image_uploader('gallery_images',$images,3);
+			echo bbytes_render_image_uploader('gallery_images',$images,99);
 			// TODO: render the shooting gallery metabox
 
 		}
