@@ -16,8 +16,6 @@ if( !class_exists('ShootingGallery') ) {
 		private static $version = '0.1.0';
 		private static $_this;
 		private $settings;
-		private $pname = 'Shooting Gallery';
-		private $images;
 
 		public static function Instance() {
 			static $instance = null;
@@ -83,12 +81,32 @@ if( !class_exists('ShootingGallery') ) {
 		}
 		public function shooting_gallery_metabox( $post ) {
 			wp_nonce_field( 'shooting_gallery_metabox', 'shooting_gallery_metabox_nonce' );
-			echo 'Shooting Gallery';
-			echo bbytes_render_image_uploader('test',$images,3);
+			echo '<p>These images will be included in the gallery. use the [shooting_gallery] shortcode to place it in the body, rather than before it.</p>';
+			$images = get_post_meta($post->ID, 'gallery_images', true);
+			echo bbytes_render_image_uploader('gallery_images',$images,3);
 			// TODO: render the shooting gallery metabox
 
 		}
-		public function save_post( $post_id ) {
+		public function save_post( $post_id, $post ) {
+			if (!isset($_POST["shooting_gallery_metabox_nonce"]) || !wp_verify_nonce($_POST["shooting_gallery_metabox_nonce"], basename("shooting_gallery_metabox")))
+				return $post_id;
+			if(defined("DOING_AUTOSAVE") && DOING_AUTOSAVE)
+				        return;
+ 			if (defined('DOING_AJAX') && DOING_AJAX)
+				        return;
+			if (!current_user_can( 'edit_post' , $post_id ) )
+				return $post_id;
+			$gallery_images = '';
+			if (isset($_POST['gallery_images']) && $_POST['gallery_images'])
+				$gallery_images = $_POST['gallery_images'];
+
+			$current_gallery_images = get_post_meta( $post_id, 'gallery_images', true);
+			if ( $gallery_images && '' == $current_gallery_images)
+				add_post_meta( $post_id, 'gallery_images', true);
+			elseif ( $gallery_images && $gallery_images != $current_gallery_images)
+				update_post_meta($post_id, "gallery_images", $gallery_images);
+			elseif ( '' == $gallery_images && $current_gallery_images)
+				delete_post_meta( $post_id, "gallery_images",  $current_gallery_images);
 			// TODO: save the metabox data
 		}
 		public function sg_shortcode( $atts, $content ) {
