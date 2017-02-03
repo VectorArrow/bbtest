@@ -50,10 +50,17 @@ if( !class_exists('ShootingGallery') ) {
 		// PUBLIC FUNCTIONS
 		public function register_resources(){
 			wp_register_script('owl_carousel', plugin_dir_url( __FILE__ ) . 'resources/owl-carousel-1.3.2/owl.carousel.js', array('jquery'), '1.3.2', true);
-			wp_register_script('owl_carousel_init', plugin_dir_url( __FILE__ ) . 'owl.init.js', array('jquery', 'owl_carousel'), false, true);
+			
+			wp_register_script('carousel_init', plugin_dir_url( __FILE__ ) . 'init.js', array('jquery', 'owl_carousel', 'featherlight', 'featherlight_gallery'), false, true);
 			wp_register_style('owl_carousel_css', plugin_dir_url( __FILE__ ) . 'resources/owl-carousel-1.3.2/owl.carousel.css', false, '1.3.2');
 			wp_register_style('owl_carousel_theme_css', plugin_dir_url( __FILE__ ) . 'resources/owl-carousel-1.3.2/owl.theme.css', false, '1.3.2');
 			wp_register_style('owl_carousel_transition_css', plugin_dir_url( __FILE__ ) . 'resources/owl-carousel-1.3.2/owl.transitions.css', false, '1.3.2');	
+			wp_register_script('featherlight', plugin_dir_url( __FILE__ ) . 'resources/featherlight-1.5.0/featherlight.min.js', array('jquery'), '1.5.0');
+			wp_register_style('featherlight_css', plugin_dir_url( __FILE__ ) . 'resources/featherlight-1.5.0/featherlight.min.css', false, '1.5.0');
+			
+			wp_register_script('featherlight_gallery', plugin_dir_url( __FILE__ ) . 'resources/featherlight-1.5.0/featherlight.gallery.min.js', array('jquery', 'featherlight'), '1.5.0');
+			wp_register_style('featherlight_gallery_css', plugin_dir_url( __FILE__ ) . 'resources/featherlight-1.5.0/featherlight.gallery.min.css', false, '1.5.0');
+			wp_register_script('shooting_gallery_init', plugin_dir_url( __FILE__ ) . 'init.js', array('jquery'), false, true);
 		}
 		public function the_content($content){
 			$output = '';
@@ -108,7 +115,8 @@ if( !class_exists('ShootingGallery') ) {
 			if(defined("DOING_AUTOSAVE") && DOING_AUTOSAVE)
 				        return;
  			if (defined('DOING_AJAX') && DOING_AJAX)
-				        return;
+				cript('featherlight');
+            wp_enqueue_style('featherlight_css');eturn;
 			if (!current_user_can( 'edit_post' , $post_id ) )
 				return $post_id;
 			$gallery_images = '';
@@ -126,16 +134,26 @@ if( !class_exists('ShootingGallery') ) {
 		}
 		public function sg_shortcode( $atts, $content ) {
 			wp_enqueue_script('owl_carousel');
-			wp_enqueue_script('owl_carousel_init');
 			wp_enqueue_style('owl_carousel_css');
 			wp_enqueue_style('owl_carousel_transition_css');
 			wp_enqueue_style('owl_carousel_theme_css');
+			
+			wp_enqueue_script('featherlight');
+			wp_enqueue_style('featherlight_css');
+			
+			wp_enqueue_script('featherlight_gallery');
+			wp_enqueue_style('featherlight_gallery_css');
+
+			wp_enqueue_script('shooting_gallery_init');
+
 			$gal_ids = get_post_meta( get_the_ID(), 'gallery_images', true);// TODO: implement shortcode
 			if ( empty( $gal_ids ))
 				return;		
 			$output = '<div class="owl-carousel owl-theme">';
 			foreach( $gal_ids as $img_id ){
+				$output .= '<a href="' . wp_get_attachment_image_src($img_id, 'full')[0] . '" class="gallery">';
 				$output .= wp_get_attachment_image( $img_id, 'medium_large' );
+				$output .= '</a>';
 			}
 			$output .= '</div>';	
 			return $output;
