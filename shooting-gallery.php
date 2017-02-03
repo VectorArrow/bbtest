@@ -56,7 +56,11 @@ if( !class_exists('ShootingGallery') ) {
 			wp_register_style('owl_carousel_transition_css', plugin_dir_url( __FILE__ ) . 'resources/owl-carousel-1.3.2/owl.transitions.css', false, '1.3.2');	
 		}
 		public function the_content($content){
-			return $content;
+			$output = '';
+			if (!has_shortcode($content))
+				$output = do_shortcode('[shooting-gallery]');
+			$output .= $content;
+			return $output;
 		}
 		public function register_activation() {
 			// Stuff that only has to run once, on plugin activation
