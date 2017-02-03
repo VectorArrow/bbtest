@@ -49,8 +49,11 @@ if( !class_exists('ShootingGallery') ) {
 
 		// PUBLIC FUNCTIONS
 		public function register_resources(){
-			wp_register_script('owl_carousel', plugin_dir_path( __FILE__ ) . 'resources/owl-carousel-1.3.2/owl.carousel.js', array('jquery'), '1.3.2', true);
-			wp_register_style('owl_carousel_css', plugin_dir_path( __FILE__ ) . 'resources/owl-carousel-1.3.2/owl.carousel.css', false, '1.3.2');
+			wp_register_script('owl_carousel', plugin_dir_url( __FILE__ ) . 'resources/owl-carousel-1.3.2/owl.carousel.js', array('jquery'), '1.3.2', true);
+			wp_register_script('owl_carousel_init', plugin_dir_url( __FILE__ ) . 'owl.init.js', array('jquery', 'owl_carousel'), false, true);
+			wp_register_style('owl_carousel_css', plugin_dir_url( __FILE__ ) . 'resources/owl-carousel-1.3.2/owl.carousel.css', false, '1.3.2');
+			wp_register_style('owl_carousel_theme_css', plugin_dir_url( __FILE__ ) . 'resources/owl-carousel-1.3.2/owl.theme.css', false, '1.3.2');
+			wp_register_style('owl_carousel_transition_css', plugin_dir_url( __FILE__ ) . 'resources/owl-carousel-1.3.2/owl.transitions.css', false, '1.3.2');	
 		}
 		public function the_content($content){
 			return $content;
@@ -119,12 +122,19 @@ if( !class_exists('ShootingGallery') ) {
 		}
 		public function sg_shortcode( $atts, $content ) {
 			wp_enqueue_script('owl_carousel');
+			wp_enqueue_script('owl_carousel_init');
 			wp_enqueue_style('owl_carousel_css');
-			$gal_images = get_post_meta( get_the_ID(), 'gallery_images', true);// TODO: implement shortcode
+			wp_enqueue_style('owl_carousel_transition_css');
+			wp_enqueue_style('owl_carousel_theme_css');
+			$gal_ids = get_post_meta( get_the_ID(), 'gallery_images', true);// TODO: implement shortcode
+			if ( empty( $gal_ids ))
+				return;		
 			$output = '<div class="owl-carousel owl-theme">';
-			
+			foreach( $gal_ids as $img_id ){
+				$output .= wp_get_attachment_image( $img_id, 'medium_large' );
+			}
 			$output .= '</div>';	
-			return print_r($gal_images, true);
+			return $output;
 		}
 		// PRIVATE FUNCTIONS
 		private function initialize_settings() {
